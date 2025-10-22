@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { usePrivy } from "@privy-io/react-auth";
+import { useMoca } from "@/contexts/MocaContext";
 
 const languages: { code: string; text: string }[] = [
   { code: "en", text: "Rozi" },
@@ -26,8 +26,25 @@ const SplashScreen: React.FC<SplashScreenProps> = ({}) => {
   const [currentLanguage, setCurrentLanguage] = useState(0);
   const [currentIllustration, setCurrentIllustration] = useState(1);
   const [showLoginButton, setShowLoginButton] = useState(false);
-  const { ready, authenticated, login } = usePrivy();
+  const { isInitialized, isLoggedIn, login, loading } = useMoca();
   const router = useRouter();
+
+  // Debug logging
+  console.log("SplashScreen state:", { isInitialized, isLoggedIn, loading, showLoginButton });
+
+  // Show login button when initialized or after timeout
+  useEffect(() => {
+    if (isInitialized) {
+      setShowLoginButton(true);
+    } else {
+      // Fallback: show login button after 3 seconds even if initialization fails
+      const timer = setTimeout(() => {
+        setShowLoginButton(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isInitialized]);
 
   useEffect(() => {
     const languageInterval = setInterval(() => {
@@ -38,24 +55,23 @@ const SplashScreen: React.FC<SplashScreenProps> = ({}) => {
       setCurrentIllustration((prev) => (prev % 8) + 1);
     }, 2000);
 
-    const loginButtonTimer = setTimeout(() => {
-      setShowLoginButton(true);
-    }, 5000);
-
     return () => {
       clearInterval(languageInterval);
       clearInterval(illustrationInterval);
-      clearTimeout(loginButtonTimer);
     };
   }, []);
 
   useEffect(() => {
-    if (ready && authenticated) {
+    if (isLoggedIn) {
       router.push("/home");
     }
-  }, [ready, authenticated, router]);
+  }, [isLoggedIn, router]);
 
-  const disableLogin = !ready || (ready && authenticated);
+  const handleLogin = async () => {
+    await login();
+  };
+
+  const disableLogin = !isInitialized || loading || isLoggedIn;
 
   return (
     <div className="h-screen w-full bg-[#FFFFF0] flex flex-col items-center justify-between">
@@ -90,10 +106,16 @@ const SplashScreen: React.FC<SplashScreenProps> = ({}) => {
             >
               <Button
                 className="mt-16 bg-[#FFA500] hover:bg-[#FF9000] text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={login}
+                onClick={handleLogin}
                 disabled={disableLogin}
               >
-                {ready ? (authenticated ? "Logged In" : "Login") : "Loading..."}
+                {loading
+                  ? "Loading..."
+                  : isLoggedIn
+                  ? "Logged In"
+                  : isInitialized
+                  ? "Login"
+                  : "Initializing..."}
               </Button>
             </motion.div>
           )}

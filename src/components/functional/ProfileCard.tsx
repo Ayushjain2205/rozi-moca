@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Star, CheckCircle, Wrench, Coins, Gauge } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { usePrivy } from "@privy-io/react-auth";
+import { useMoca } from "@/contexts/MocaContext";
 
 interface ProfileCardProps {
   roles: string[];
@@ -49,15 +49,15 @@ export default function ProfileCard({
   platformScore,
   roziCoins,
 }: ProfileCardProps) {
-  const { ready, authenticated, user } = usePrivy();
+  const { isInitialized, isLoggedIn, user, loading } = useMoca();
 
   // Show nothing if user is not authenticated or data is still loading
-  if (!(ready && authenticated) || !user) {
+  if (loading || !isInitialized || !isLoggedIn || !user) {
     return null;
   }
 
-  const [name, setName] = useState(user.google?.name || "Anonymous Ninja");
-  const [address, setAddress] = useState(user.wallet?.address);
+  const [name, setName] = useState(user.name || "Anonymous Ninja");
+  const [address, setAddress] = useState(user.address);
 
   return (
     <Card className="w-full max-w-md border-2 border-black bg-white shadow-lg mx-auto">

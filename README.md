@@ -15,6 +15,25 @@ Rozi is a revolutionary platform aimed at enhancing the welfare of gig workers i
 - **Open Protocol**: An open platform for developers and third-party integrations.
 - **Multi-lingual Support**: Support for multiple languages to cater to the diverse Indian workforce.
 
+## Setup Instructions
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# Moca AIR Kit Configuration
+# Get your Partner ID from the Moca Developer Dashboard: https://developers.sandbox.air3.com
+NEXT_PUBLIC_MOCA_PARTNER_ID=YOUR_PARTNER_ID
+```
+
+### Getting Your Moca Partner ID
+
+1. Go to the [Moca Developer Dashboard](https://developers.sandbox.air3.com)
+2. Login with your EOA wallet
+3. Navigate to the Account Section → General page
+4. Copy your Partner ID from the partner account information
+
 ## Deployed Contracts
 
 1. **Rozi Token**: [0x932b4902AC3E40b46661881fBcA91268C81DFBf3](https://sepolia.basescan.org/address/0x932b4902AC3E40b46661881fBcA91268C81DFBf3)

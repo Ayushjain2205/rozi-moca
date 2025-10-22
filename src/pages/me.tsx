@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { usePrivy } from "@privy-io/react-auth";
+import { useMoca } from "@/contexts/MocaContext";
 import ImportDataSection from "@/components/functional/ImportDataSection";
 import ActivitySection from "@/components/functional/ActivitySection";
 import PaymentSection from "@/components/functional/PaymentSection";
@@ -74,14 +74,14 @@ export default function MePage() {
     { icon: Banknote, value: "₹32,505", label: "Total Earnings" },
   ];
 
-  const { ready, authenticated, user } = usePrivy();
+  const { isInitialized, isLoggedIn, user, loading } = useMoca();
 
   // Show nothing if user is not authenticated or data is still loading
-  if (!(ready && authenticated) || !user) {
+  if (loading || !isInitialized || !isLoggedIn || !user) {
     return null;
   }
 
-  const [name, setName] = useState(user.google?.name || "Anonymous Ninja");
+  const [name, setName] = useState(user.name || "Anonymous Ninja");
 
   return (
     <Layout>
