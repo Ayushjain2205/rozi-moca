@@ -44,9 +44,10 @@ export const MocaProvider: React.FC<MocaProviderProps> = ({ children }) => {
     const initializeAirService = async () => {
       try {
         console.log("Initializing Moca AIR Kit...");
-        const partnerId = process.env.NEXT_PUBLIC_MOCA_PARTNER_ID || "YOUR_PARTNER_ID";
+        const partnerId =
+          process.env.NEXT_PUBLIC_MOCA_PARTNER_ID || "YOUR_PARTNER_ID";
         console.log("Partner ID:", partnerId);
-        
+
         const service = new AirService({
           partnerId,
         });
@@ -115,6 +116,8 @@ export const MocaProvider: React.FC<MocaProviderProps> = ({ children }) => {
       await airService.logout();
       setIsLoggedIn(false);
       setUser(null);
+      // Redirect to home page after logout
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout failed:", error);
     }

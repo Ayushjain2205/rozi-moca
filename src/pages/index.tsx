@@ -30,7 +30,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({}) => {
   const router = useRouter();
 
   // Debug logging
-  console.log("SplashScreen state:", { isInitialized, isLoggedIn, loading, showLoginButton });
+  console.log("SplashScreen state:", {
+    isInitialized,
+    isLoggedIn,
+    loading,
+    showLoginButton,
+  });
 
   // Show login button when initialized or after timeout
   useEffect(() => {
@@ -41,7 +46,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({}) => {
       const timer = setTimeout(() => {
         setShowLoginButton(true);
       }, 3000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isInitialized]);

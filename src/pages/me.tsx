@@ -9,10 +9,12 @@ import {
   Banknote,
   Briefcase,
   LucideIcon,
+  LogOut,
 } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMoca } from "@/contexts/MocaContext";
+import { Button } from "@/components/ui/button";
 import ImportDataSection from "@/components/functional/ImportDataSection";
 import ActivitySection from "@/components/functional/ActivitySection";
 import PaymentSection from "@/components/functional/PaymentSection";
@@ -58,6 +60,9 @@ const MetricCard: React.FC<MetricCardProps> = ({
 
 export default function MePage() {
   const [currentMetricIndex, setCurrentMetricIndex] = useState(0);
+  const [name, setName] = useState("Anonymous Ninja");
+
+  const { isInitialized, isLoggedIn, user, loading, logout } = useMoca();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -65,6 +70,13 @@ export default function MePage() {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Update name when user data is available
+  useEffect(() => {
+    if (user?.name) {
+      setName(user.name);
+    }
+  }, [user]);
 
   const metrics: MetricCardProps[] = [
     { icon: Star, value: profileData.rating.toFixed(1), label: "Rating" },
@@ -74,14 +86,30 @@ export default function MePage() {
     { icon: Banknote, value: "₹32,505", label: "Total Earnings" },
   ];
 
-  const { isInitialized, isLoggedIn, user, loading } = useMoca();
-
-  // Show nothing if user is not authenticated or data is still loading
+  // Show loading or not authenticated state
   if (loading || !isInitialized || !isLoggedIn || !user) {
-    return null;
+    return (
+      <Layout>
+        <div className="container mx-auto pb-4">
+          <Card className="mb-6 bg-white border-2 border-[#000]">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-center">
+                <div className="text-center">
+                  {loading ? (
+                    <p className="text-lg">Loading...</p>
+                  ) : (
+                    <p className="text-lg">
+                      Please log in to view your profile
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
   }
-
-  const [name, setName] = useState(user.name || "Anonymous Ninja");
 
   return (
     <Layout>
@@ -138,6 +166,18 @@ export default function MePage() {
             <ImportDataSection />
           </TabsContent>
         </Tabs>
+
+        {/* Logout Button */}
+        <div className="mt-8 flex justify-center">
+          <Button
+            onClick={logout}
+            variant="outline"
+            className="flex items-center space-x-2 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors duration-200"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </Button>
+        </div>
       </div>
     </Layout>
   );
